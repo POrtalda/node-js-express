@@ -1,6 +1,7 @@
 import './App.css'
 import { useState } from 'react';
 import Books from './components/books/Books';
+import { useEffect } from 'react';
 
 
 function App() {
@@ -51,6 +52,14 @@ function App() {
     disponibile: false
   }
   ]);
+
+  useEffect(() => {fetch('http://localhost:3000/books')
+      .then(response => response.json())
+      .then(data => setBooks(data.data))
+      .catch(error => console.error('Error fetching books:', error));
+    }, []);
+    
+ 
   
 
   return (
