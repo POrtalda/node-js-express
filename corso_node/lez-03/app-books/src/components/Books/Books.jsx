@@ -1,9 +1,10 @@
-
+import './Books.css';
 
 export default function Books({books}) {
 return (
     <>
-        <ul>
+        {books.length > 0 && (
+            <ul>            
             {books.map(book => (
                 <li key={book.id}>
                     <h2>{book.title}</h2>
@@ -12,6 +13,8 @@ return (
                 </li>
             ))}
         </ul>
+        )}
+        
     </>
 )
 }
