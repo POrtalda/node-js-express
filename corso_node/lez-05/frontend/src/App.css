@@ -1,0 +1,56 @@
+h1 {
+  text-align: center;
+  color: green;
+  font-size: 50px;
+  margin-top: 25px;
+}
+
+h2 {
+  margin-bottom: 1em;
+}
+
+#main {
+  margin-top: 25px;
+  display: flex;
+}
+
+td:hover {
+  background-color: lightcoral;
+}
+
+.colonne {
+  width: 33%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+form, table {
+  background-color: #c8ecc8;
+  border-radius: 5px;
+  width: 80%;
+  padding: 1em;
+}
+input {
+  width: 100%;
+}
+button {
+  width: 100%;
+  height: 30px;
+  border-radius: 1em;
+  margin-bottom: 0.5em;
+}
+button:hover {
+  background-color: white;
+  cursor: pointer;
+}
+button.delete {
+  background-color: lightcoral;
+}
+button.edit {
+  background-color: lightblue;
+}
+button.add {
+  background-color: lightgreen;
+}

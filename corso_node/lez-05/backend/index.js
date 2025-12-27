@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
 const PORT = 3000;
@@ -12,6 +13,9 @@ let songs = [
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use(cors({
+    origin: 'http://localhost:5173' // indirizzo del client Vite
+}));
 
 // API routes
 // GET /songs
