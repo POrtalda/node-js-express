@@ -3,9 +3,8 @@ const usersRouter = require('./routes/users');
 const app = express();
 const PORT = 3000;
 
-// middleware to parse JSON bodies
-app.use(express.json());
 
+app.use(express.json());
 app.use('/users', usersRouter);
 
 

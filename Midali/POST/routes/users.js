@@ -11,4 +11,11 @@ router.get('/', (req, res) => {
   res.send(users);
 });
 
+router.post('/', (req, res) => {
+  console.log(req.body);
+  const newUser = req.body;
+  users.push(newUser);
+  res.send('utente aggiunto con successo');
+});
+
 module.exports = router;
