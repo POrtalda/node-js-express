@@ -2,6 +2,7 @@ const express = require('express');
 const {connectDB} = require('./db');
 const bookRouter = require('./routes/books');
 const usersRouter = require('./routes/users');
+const ordersRouter = require('./routes/users');
 const app = express();
 const PORT = 3000;
 
@@ -13,6 +14,7 @@ const PORT = 3000;
 app.use(express.json());
 app.use('/books', bookRouter);
 app.use('/users', usersRouter);
+app.use('/orders', ordersRouter);
 
 async function startServer() {
     await connectDB();
