@@ -87,18 +87,27 @@ bookRouter.post('/', async (req, res) => {
         const newBook = req.body;
 
         // campi obligatori
+        // TITLE E NUM_PAG OBBLIGATORI, SE MANCANO RITORNA ERRORE 400
         if (!newBook.title || !newBook.num_pag) {
             return res.status(400).json({
                 success: false,
                 message: 'title e num_pag sono campi obbligatori'
             });
         }
-        // PROVA TU: QUANDO VIENE CREATO IL BOOK DEVONO ESSERCI SOLO I CAMPI:
-        // TITLE E NUM_PAG OBBLIGATORI, ISAVAILABLE E' OPZIONALE, NON DEVONO ESSERCI ALTRI CAMPI
-        // SE CI SONO ALTRI CAMPI RITORNA ERRORE 400 CON MESSAGGIO DEI CAMPI NON CONSENTITI
+
+        //NON DEVONO ESSERCI più di 3 CAMPI
+        const numFields = Object.keys(newBook).length;
+        if (numFields > 3 && !newBook.isAvailable) {
+            return res.status(400).json({
+                success: false,
+                message: 'il libro può avere al massimo 3 campi: title, num_pag e isAvailable (opzionale)'
+            });
+        } 
+         
+        
 
         
-        const allowedFields = ['title', 'num_pag', 'author', 'genere', 'anno_pubblicazione', 'isAvailable'];
+        const allowedFields = ['title', 'num_pag', 'isAvailable'];
         const newBookKeys = Object.keys(newBook);
         const invalidFields = newBookKeys.filter(key => !allowedFields.includes(key));
         if (invalidFields.length > 0) {
