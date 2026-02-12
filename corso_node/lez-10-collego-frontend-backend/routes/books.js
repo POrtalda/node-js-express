@@ -95,7 +95,7 @@ bookRouter.post('/', async (req, res) => {
             });
         }
 
-        
+        // controlla che non ci siano campi non consentiti, se ci sono ritorna errore 400
         for (let key in newBook) {
             if (!['title', 'author', 'is_available'].includes(key)) {
                 return res.status(400).json({
@@ -104,18 +104,6 @@ bookRouter.post('/', async (req, res) => {
                 });
             }
         }
-        
-
-        
-        // const allowedFields = ['title', 'num_pag', 'isAvailable'];
-        // const newBookKeys = Object.keys(newBook);
-        // const invalidFields = newBookKeys.filter(key => !allowedFields.includes(key));
-        // if (invalidFields.length > 0) {
-        //     return res.status(400).json({
-        //         success: false,
-        //         message: `I seguenti campi non sono consentiti: ${invalidFields.join(', ')}`
-        //     });
-        // }
 
         const result = await getDB()
             .collection('books')
