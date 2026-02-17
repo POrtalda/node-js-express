@@ -3,17 +3,19 @@ const {connectDB} = require('./db');
 const bookRouter = require('./routes/books');
 const usersRouter = require('./routes/users');
 const ordersRouter = require('./routes/orders');
-require('dotenv').config();
+const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT_DEV;
+const PORT = 3000;
 
 
 // Middleware to parse JSON bodies
+app.use(cors({origin:'http://localhost:5173'}));
 app.use(express.json());
 app.use('/api/books', bookRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/orders', ordersRouter);
+
 
 // Start the server
 async function startServer() {
