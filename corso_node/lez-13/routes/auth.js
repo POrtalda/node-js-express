@@ -20,7 +20,7 @@ authRouter.post('/', async (req, res) => {
 
         // se non trova utente
         if (!user) {
-            return res.status(404).json({ success: false, message: 'Utente non trovato nel db' });
+            return res.status(404).json({ success: false, message: 'Utente non trovato nel db', data: null });
         }
 
         // controllo se la password  è valida con il metodo 'compare' di bcrypt, 
@@ -29,7 +29,7 @@ authRouter.post('/', async (req, res) => {
 
         // se la password non è valida, ritorno errore 401 (Unauthorized)
         if (!isPasswordValid) {
-            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+            return res.status(401).json({ success: false, message: 'Invalid credentials', data: null });
         }
 
         // se tutto ok, genero un token JWT con il metodo 'sign' di jsonwebtoken,
@@ -41,8 +41,7 @@ authRouter.post('/', async (req, res) => {
             { expiresIn: '1h' }
         );
 
-        res.json({ token });
-
+        
         console.log('Token generato:', token);
 
         return res.status(200).json({

@@ -6,20 +6,26 @@ const requireRole = require('../middlewares/requireRole');
 
 const bookRouter = express.Router();
 
-// rottaper fare test e capire req.user 
+// rotta per fare test e capire req.user 
 // che viene aggiunto dal middleware di autenticazione
 bookRouter.get('/me', authMiddleware, (req, res) => {
-return res.json(req.user);
+    return res.json(req.user);
 });
 
 // GET /api/books
 bookRouter.get('/', authMiddleware, async (req, res) => {
 
     try {
-        const books = await getDB()
-            .collection('books')
-            .find()
-            .toArray();
+        let books = [];
+        // con questo if utente admin deve vedere tutti i libri
+        if (req.user.role === 'admin') {
+            books = await getDB().collection('books').find().toArray();
+        }
+        else if (req.user.role === 'user') {
+            // se utente non admin, deve vedere solo i libri che ha creato lui , quindi quelli con user_id uguale al suo id
+            books = await getDB().collection('books').find({ user_id: req.user.id }).toArray();
+        }
+
 
         if (books.length === 0) {
             return res.status(404).json({
@@ -48,7 +54,7 @@ bookRouter.get('/', authMiddleware, async (req, res) => {
 });
 
 // GET /books/:id
-bookRouter.get('/:id', async (req, res) => {
+bookRouter.get('/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -59,10 +65,14 @@ bookRouter.get('/:id', async (req, res) => {
                 message: `id non valido: ${id}`
             });
         }
+        
+        let book = await getDB().collection('books').findOne({ _id: new ObjectId(id) });
 
-        const book = await getDB()
-            .collection('books')
-            .findOne({ _id: new ObjectId(id) });
+        // se l'utente è un user, deve vedere solo i libri che ha creato lui , quindi quelli con user_id uguale al suo id
+        if (req.user.role === 'user' && book.user_id !== req.user.id) {
+            book = null;
+        }
+
 
         if (!book) {
             return res.status(404).json({
@@ -90,9 +100,13 @@ bookRouter.get('/:id', async (req, res) => {
 });
 
 // POST /books
-bookRouter.post('/' ,async (req, res) => {
+bookRouter.post('/', authMiddleware, async (req, res) => {
     try {
-        const newBook = req.body;
+        const newBook = req.body;         // leggo i dati del libro da creare dal body della richiesta
+
+        console.log('req.user.id: ', req.user.id);  // stampo req.user per vedere che c'è l'utente autenticato
+
+        newBook.user_id = req.user.id;   // inserisco l'id dell'utente che ha creato il libro, così poi posso fare i controlli di autorizzazione per update e delete
 
         // campi obligatori
         // TITLE E AUTHOR OBBLIGATORI, SE MANCANO RITORNA ERRORE 400
@@ -105,10 +119,10 @@ bookRouter.post('/' ,async (req, res) => {
 
         // controlla che non ci siano campi non consentiti, se ci sono ritorna errore 400
         for (let key in newBook) {
-            if (!['title', 'author', 'is_available'].includes(key)) {
+            if (!['title', 'author', 'is_available', 'user_id'].includes(key)) {
                 return res.status(400).json({
                     success: false,
-                    message: `il libro non può avere il campo ${key}, i campi consentiti sono: title, author e is_available (opzionale)`
+                    message: `il libro non può avere il campo ${key}, i campi consentiti sono: title, author, is_available e user_id`
                 });
             }
         }
@@ -133,7 +147,7 @@ bookRouter.post('/' ,async (req, res) => {
 });
 
 // PUT /books/:id
-bookRouter.put('/:id', async (req, res) => {
+bookRouter.put('/:id', authMiddleware, requireRole('admin'), async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -174,7 +188,7 @@ bookRouter.put('/:id', async (req, res) => {
 })
 
 // DELETE /books/:id
-bookRouter.delete('/:id', authMiddleware, requireRole('admin'),async (req, res) => {
+bookRouter.delete('/:id', authMiddleware, requireRole('admin'), async (req, res) => {
     try {
         const { id } = req.params;
 
