@@ -1,18 +1,35 @@
 import './ModBook.css';
-import { useState } from "react";
+import { use, useState } from "react";
 import { useEffect } from "react";
 
-export default function ModBook({ books }) {
+export default function ModBook({ books, token }) {
 
 
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [isAvailable, setIsAvailable] = useState(false);
     const [selectedBookId, setSelectedBookId] = useState(null);
+    const [role, setRole] = useState('');
+
+    useEffect(() => {
+        fetch(`http://localhost:3000/api/books/me/`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setRole(data.role);
+            });
+    }, []);
 
     useEffect(() => {
         if (selectedBookId) {
-            fetch(`http://localhost:3000/api/books/${selectedBookId}`)
+            fetch(`http://localhost:3000/api/books/${selectedBookId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
                 .then(res => res.json())
                 .then(data => {
                     const book = data.data;
@@ -32,7 +49,8 @@ export default function ModBook({ books }) {
         fetch(`http://localhost:3000/api/books/${selectedBookId}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 title: title,
@@ -42,14 +60,16 @@ export default function ModBook({ books }) {
         })
             .then(res => res.json())
             .then(data => {
-                alert(`libro aggiornato: ${data.data.title}`);
+                alert(data.message);
                 location.reload(); // ricarica la pagina per vedere le modifiche (da migliorare)
             });
     }
 
     function clickDelete() {
         fetch(`http://localhost:3000/api/books/${selectedBookId}`, {
-            method: 'DELETE'
+            method: 'DELETE', headers: {
+                'Authorization': `Bearer ${token}`
+            }
         })
             .then(res => res.json())
             .then(data => {
@@ -83,8 +103,15 @@ export default function ModBook({ books }) {
                         <label>Disponibile:
                             <input type="checkbox" checked={isAvailable} onChange={(e) => setIsAvailable(e.target.checked)} />
                         </label> <br />
-                        <button onClick={clickSave}>salva</button>
-                        <button onClick={clickDelete}>elimina</button>
+
+                        {/* ci serve un rendering condizionale per mostrare i 2 tasti solo all'admin */}
+                        {role === 'admin' && (
+                            <>
+                                <button onClick={clickSave}>salva</button>
+                                <button onClick={clickDelete}>elimina</button>
+                            </>
+                        )}
+
                     </div>
                 )}
             </div>

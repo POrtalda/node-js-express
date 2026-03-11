@@ -1,7 +1,7 @@
 import './NewBook.css';
 import { useState } from "react";
 
-export default function NewBook() {
+export default function NewBook({token}) {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [isAvailable, setIsAvailable] = useState(false);
@@ -10,7 +10,8 @@ export default function NewBook() {
         fetch('http://localhost:3000/api/books', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 title: title,

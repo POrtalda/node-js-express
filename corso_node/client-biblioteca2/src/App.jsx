@@ -10,7 +10,7 @@ function App() {
   function handleLogin(token) {
     localStorage.setItem('token', token);
     setToken(token);
-  
+
   }
   function handleLogout() {
     localStorage.removeItem("token");
@@ -24,12 +24,12 @@ function App() {
         <>
           <Books token={token} />
           <Logout onLogout={handleLogout} />
+          
         </>
       ) : (
         <Login onLogin={handleLogin} />
       )}
-      {/* <ModBook books={books} />
-      <NewBook /> */}
+
     </>
   )
 }

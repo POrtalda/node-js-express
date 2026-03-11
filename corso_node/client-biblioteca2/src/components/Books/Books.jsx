@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import './Books.css';
+import ModBook from "../ModBook/ModBook";
+import NewBook from "../NewBook/NewBook";
 export default function Books({ token }) {
 
     const [books, setBooks] = useState([]);
 
+    // effetto collaterale che scatta solo quando 
+    // il componente viene montato
     useEffect(() => {
         fetch('http://localhost:3000/api/books', {
             headers: {
@@ -11,7 +15,7 @@ export default function Books({ token }) {
             }
         })
             .then(res => res.json())
-            .then(data => setBooks(data.data));
+            .then(data => setBooks(data.data || []));
     }, []);
 
     return (
@@ -27,6 +31,9 @@ export default function Books({ token }) {
                     ))}
                 </div>
             </div>
+
+            <ModBook books={books} token={token} />
+            <NewBook token={token}/>
         </>
     )
 }
